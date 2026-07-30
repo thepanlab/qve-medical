@@ -34,7 +34,7 @@ QVE is loaded directly from Hugging Face (`Qwen/Qwen3-VL-8B-Instruct`) via `tran
 | **Kvasir v1** | 8-class GI endoscopy (4,000 images) | https://datasets.simula.no/kvasir/ |
 | **PAD-UFES-20** | 6-class smartphone skin-lesion (2,298 images) | https://data.mendeley.com/datasets/zr7vgbcyr2/1 |
 | **MedMNIST v2** | 12 subtasks used in this study | https://medmnist.com/ |
-| **OCT Liver** (ours) | Binary normal vs. tumor, 4-channel (intensity, retardation, optic axis, DOPU) OCT/PS-OCT, 5 subjects | Zenodo link — *to be added upon release* |
+| **OCT Liver** (ours) | Binary normal vs. tumor, 4-channel (intensity, retardation, optic axis, DOPU) OCT/PS-OCT, 5 subjects | https://zenodo.org/records/21694718 |
 
 `train_medmnist.py` expects pre-processed 224×224 `.npz` files (the format distributed by the MedMNIST project) at `<data_root>/<dataset_name>_224.npz`. `train_kvasir.py` and `train_padufes.py` expect the datasets extracted in their original folder structure, pointed to via `--data_root`.
 
