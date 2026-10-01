@@ -15,6 +15,15 @@ scripts/
 ├── train_kvasir.py           # Training + eval on Kvasir v1 (8-class GI endoscopy)
 ├── train_padufes.py          # Training + eval on PAD-UFES-20 (6-class skin lesion, patient-level split)
 └── train_medmnist.py         # Training + eval on MedMNIST v2 subtasks
+
+scripts_torchvision/          # CNN / ViT baselines from torchvision
+├── train_kvasir.py           # ConvNeXt-Base, Swin-B, DenseNet-169
+├── train_padufes.py          # ConvNeXt-Base, Swin-B, DenseNet-169
+└── train_medmnist.py         # ResNet-50, DenseNet-169, ConvNeXt-Base, Swin-B, Inception-v3
+
+scripts_timm/                 # Baselines from timm (ImageNet-pretrained)
+├── train_kvasir.py           # DeiT-B, EfficientNetV2-M, PVTv2-b3, DaViT-B
+└── train_padufes.py          # same model set
 ```
 
 ## Setup
@@ -22,7 +31,8 @@ scripts/
 ```bash
 git clone https://github.com/<your-username>/qve-medical.git
 cd qve-medical
-pip install torch torchvision transformers pillow numpy pandas tqdm accelerate
+pip install torch torchvision transformers pillow numpy pandas tqdm accelerate scikit-learn
+pip install timm   # only needed for scripts_timm/
 ```
 
 QVE is loaded directly from Hugging Face (`Qwen/Qwen3-VL-8B-Instruct`) via `transformers`, so no separate model download step is needed — the first run will fetch and cache the weights.
@@ -60,7 +70,7 @@ python scripts/train_medmnist.py --medmnist pathmnist --data_root /path/to/medmn
 python scripts/train_medmnist.py --medmnist tissuemnist --mode frozen --epochs 20 --data_root /path/to/medmnist
 ```
 
-Common flags across all three scripts:
+Common flags across the three QVE scripts:
 - `--mode {frozen, partial_finetune, full_finetune}` — how much of the QVE backbone is trained
 - `--use_multi_tap` — enable multi-scale feature fusion instead of the single-tap (last-layer) baseline
 - `--tap_layers` — which encoder layers to tap (defaults differ slightly per script; see each script's `--help`)
@@ -68,6 +78,23 @@ Common flags across all three scripts:
 - `--epochs`, `--batch_size`, `--lr`, `--backbone_lr`, `--seed`
 
 Run any script with `-h` for the full list of arguments.
+
+### Baselines
+
+Choose the architecture with `--model`:
+
+```bash
+# torchvision
+python scripts_torchvision/train_kvasir.py   --data_root /path/to/kvasir-dataset --model convnext_base --pretrained
+python scripts_torchvision/train_padufes.py  --data_root /path/to/pad_ufes --model swin_b --pretrained
+python scripts_torchvision/train_medmnist.py --data_root /path/to/medmnist --medmnist pathmnist --model resnet50
+
+# timm
+python scripts_timm/train_kvasir.py  --data_root /path/to/kvasir-dataset --model deit_base
+python scripts_timm/train_padufes.py --data_root /path/to/pad_ufes --model pvtv2b3
+```
+
+Note on pretrained weights: the torchvision Kvasir and PAD-UFES-20 scripts train **from scratch by default** (matching the MedMamba setup); pass `--pretrained` for ImageNet weights. The torchvision MedMNIST script and the timm scripts use ImageNet weights by default; pass `--no_pretrained` to disable them.
 
 ## Citation
 
